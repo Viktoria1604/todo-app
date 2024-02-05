@@ -135,3 +135,7 @@
     height: 40px;
   }
 }
+.todo-list li.complited label .description {
+	color: #cdcdcd;
+	text-decoration: line-through;
+}
