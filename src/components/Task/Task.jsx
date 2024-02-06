@@ -2,33 +2,25 @@ import React, { Component } from "react";
 import "./Task.css";
 
 export default class Task extends Component {
-  state = {
-    done: false,
-  };
-
-  clickOn = () => {
-    this.setState(({ done }) => {
-      return {
-        done: !done,
-      };
-    });
-  };
+ 
 
   render() {
-    const { taskName, creationTime, onDeleted } = this.props;
-    const { done } = this.state;
+    const { taskName, creationTime, done, onDeleted, onCompleted } = this.props;
+    
 
     return (
-      <li className={done ? "description complited" : "description"}>
+      <li className={done ? "description complited" : "description"}
+      >
         <div className="view">
           <input
             className="toggle"
             type="checkbox"
             checked={done}
-            onChange={this.clickOn}
+            onChange={onCompleted}
+          
           />
 
-          <label onClick={this.clickOn}>
+          <label  onClick={onCompleted}>
             <span className="description">{taskName}</span>
             <span className="created">{creationTime}</span>
           </label>
