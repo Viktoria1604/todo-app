@@ -12,21 +12,24 @@ export default class App extends Component {
         taskName: "Drink Coffee",
         creationTime: Date.now(),
         done: false,
+        editing: false,
       },
       {
         id: 2,
         taskName: "Drink Energetic",
         creationTime: Date.now(),
         done: false,
+        editing: false,
       },
       {
         id: 3,
         taskName: "Drink Alhocol",
         creationTime: Date.now(),
         done: false,
+        editing: false,
       },
     ],
-    status: 'all'
+    status: "all",
   };
 
   deleteitem = (id) => {
@@ -38,12 +41,27 @@ export default class App extends Component {
       };
     });
   };
-  
-  deleteCompleted= () => {
+
+  deleteCompleted = () => {
     this.setState(({ tasks }) => {
-        const newArr = tasks.filter((el)=>!el.done);
+      const newArr = tasks.filter((el) => !el.done);
       return {
         tasks: newArr,
+      };
+    });
+  };
+
+  editTask = (id, newText) => {
+    this.setState(({ tasks }) => {
+      const updatedTasks = tasks.map((task) => {
+        if (task.id === id) {
+          return { ...task, taskName: newText };
+        }
+        return task;
+      });
+
+      return {
+        tasks: updatedTasks,
       };
     });
   };
@@ -78,13 +96,34 @@ export default class App extends Component {
   };
 
   taskFilters = (status) => {
-    if (status === "all") { return this.state.tasks }
-    if (status ==="active") {return this.state.tasks.filter((el)=>!el.done)}
-    if (status ==="completed") {return this.state.tasks.filter((el)=> el.done)}
-  }
-    filteredArr =(status)=> {
-      this.setState(()=>{return {status}})
+    if (status === "all") {
+      return this.state.tasks;
     }
+    if (status === "active") {
+      return this.state.tasks.filter((el) => !el.done);
+    }
+    if (status === "completed") {
+      return this.state.tasks.filter((el) => el.done);
+    }
+  };
+  filteredArr = (status) => {
+    this.setState(() => {
+      return { status };
+    });
+  };
+
+  changeEditingStatus = (id) => {
+    this.setState(({ tasks }) => {
+      const copyStateArr = structuredClone(tasks);
+      const index = copyStateArr.findIndex((el) => el.id === id);
+
+      copyStateArr[index].editing = !copyStateArr[index].editing;
+
+      return {
+        tasks: copyStateArr,
+      };
+    });
+  };
 
   render() {
     const leftCount = this.state.tasks.filter((el) => !el.done).length;
@@ -97,9 +136,11 @@ export default class App extends Component {
         </header>
         <section className="main">
           <TaskList
-            todos={ this.taskFilters(this.state.status)}
+            todos={this.taskFilters(this.state.status)}
             onDeleted={(id) => this.deleteitem(id)}
             onCompleted={(id) => this.taskCompleted(id)}
+            editTask={(id, newText) => this.editTask(id, newText)}
+            changeEditingStatus={(id) => this.changeEditingStatus(id)}
           />
           <Footer
             leftCount={leftCount}
