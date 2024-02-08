@@ -1,42 +1,36 @@
-import "./NewTaskForm.css";
-import { Component } from "react";
+import './NewTaskForm.css'
+import { Component } from 'react'
 import PropTypes from 'prop-types'
-
 
 export default class NewTaskForm extends Component {
   state = {
-    taskName: "",
-  };
+    taskName: '',
+  }
 
   static defaultProps = {
-      addTask: () => {},
-    };
+    addTask: () => {},
+  }
 
-    static propTypes = {
-       addTask:PropTypes.func,
-    }
-  
+  static propTypes = {
+    addTask: PropTypes.func,
+  }
+
   onTextChange = (e) => {
     this.setState({
       taskName: e.target.value,
-    });
-  };
+    })
+  }
 
   onSubmit = (e) => {
-    e.preventDefault();
-    this.props.addTask(this.state.taskName);
-  };
+    e.preventDefault()
+    this.props.addTask(this.state.taskName)
+  }
 
   render() {
     return (
       <form onSubmit={this.onSubmit}>
-        <input
-          className="new-todo"
-          placeholder="How to become a senior?"
-          autoFocus
-          onChange={this.onTextChange}
-        />
+        <input className="new-todo" placeholder="How to become a senior?" autoFocus onChange={this.onTextChange} />
       </form>
-    );
+    )
   }
 }

@@ -1,70 +1,71 @@
-import NewTaskForm from "../NewTaskForm/NewTaskForm";
-import "./App.css";
-import Footer from "../Footer/Footer";
-import TaskList from "../TaskList/TaskList";
-import { Component } from "react";
+import { Component } from 'react'
+
+import NewTaskForm from '../NewTaskForm/NewTaskForm'
+import './App.css'
+import Footer from '../Footer/Footer'
+import TaskList from '../TaskList/TaskList'
 
 export default class App extends Component {
   state = {
     tasks: [
       {
         id: 1,
-        taskName: "Drink Coffee",
+        taskName: 'Drink Coffee',
         creationTime: Date.now(),
         done: false,
         editing: false,
       },
       {
         id: 2,
-        taskName: "Drink Energetic",
+        taskName: 'Drink Energetic',
         creationTime: Date.now(),
         done: false,
         editing: false,
       },
       {
         id: 3,
-        taskName: "Drink Alhocol",
+        taskName: 'Drink Alhocol',
         creationTime: Date.now(),
         done: false,
         editing: false,
       },
     ],
-    status: "all",
-  };
+    status: 'all',
+  }
 
   deleteitem = (id) => {
     this.setState(({ tasks }) => {
-      const idx = tasks.findIndex((el) => el.id === id);
-      const newArr = tasks.toSpliced(idx, 1);
+      const idx = tasks.findIndex((el) => el.id === id)
+      const newArr = tasks.toSpliced(idx, 1)
       return {
         tasks: newArr,
-      };
-    });
-  };
+      }
+    })
+  }
 
   deleteCompleted = () => {
     this.setState(({ tasks }) => {
-      const newArr = tasks.filter((el) => !el.done);
+      const newArr = tasks.filter((el) => !el.done)
       return {
         tasks: newArr,
-      };
-    });
-  };
+      }
+    })
+  }
 
   editTask = (id, newText) => {
     this.setState(({ tasks }) => {
       const updatedTasks = tasks.map((task) => {
         if (task.id === id) {
-          return { ...task, taskName: newText };
+          return { ...task, taskName: newText }
         }
-        return task;
-      });
+        return task
+      })
 
       return {
         tasks: updatedTasks,
-      };
-    });
-  };
+      }
+    })
+  }
 
   createTask = (taskName) => {
     return {
@@ -72,61 +73,61 @@ export default class App extends Component {
       taskName,
       creationTime: Date.now(),
       done: false,
-    };
-  };
+    }
+  }
 
   addTask = (text) => {
-    const newTask = this.createTask(text);
+    const newTask = this.createTask(text)
     this.setState(({ tasks }) => {
-      const arrayAdded = [...tasks, newTask];
+      const arrayAdded = [...tasks, newTask]
       return {
         tasks: arrayAdded,
-      };
-    });
-  };
+      }
+    })
+  }
 
   taskCompleted = (id) => {
     this.setState(({ tasks }) => {
-      const idx = tasks.findIndex((el) => el.id === id);
-      const oldTask = tasks[idx];
-      const newTask = { ...oldTask, done: !oldTask.done };
-      const newArr = tasks.toSpliced(idx, 1, newTask);
-      return { tasks: newArr };
-    });
-  };
+      const idx = tasks.findIndex((el) => el.id === id)
+      const oldTask = tasks[idx]
+      const newTask = { ...oldTask, done: !oldTask.done }
+      const newArr = tasks.toSpliced(idx, 1, newTask)
+      return { tasks: newArr }
+    })
+  }
 
   taskFilters = (status) => {
-    if (status === "all") {
-      return this.state.tasks;
+    if (status === 'all') {
+      return this.state.tasks
     }
-    if (status === "active") {
-      return this.state.tasks.filter((el) => !el.done);
+    if (status === 'active') {
+      return this.state.tasks.filter((el) => !el.done)
     }
-    if (status === "completed") {
-      return this.state.tasks.filter((el) => el.done);
+    if (status === 'completed') {
+      return this.state.tasks.filter((el) => el.done)
     }
-  };
+  }
   filteredArr = (status) => {
     this.setState(() => {
-      return { status };
-    });
-  };
+      return { status }
+    })
+  }
 
   changeEditingStatus = (id) => {
     this.setState(({ tasks }) => {
-      const copyStateArr = structuredClone(tasks);
-      const index = copyStateArr.findIndex((el) => el.id === id);
+      const copyStateArr = structuredClone(tasks)
+      const index = copyStateArr.findIndex((el) => el.id === id)
 
-      copyStateArr[index].editing = !copyStateArr[index].editing;
+      copyStateArr[index].editing = !copyStateArr[index].editing
 
       return {
         tasks: copyStateArr,
-      };
-    });
-  };
+      }
+    })
+  }
 
   render() {
-    const leftCount = this.state.tasks.filter((el) => !el.done).length;
+    const leftCount = this.state.tasks.filter((el) => !el.done).length
 
     return (
       <section className="todoapp">
@@ -149,6 +150,6 @@ export default class App extends Component {
           />
         </section>
       </section>
-    );
+    )
   }
 }
