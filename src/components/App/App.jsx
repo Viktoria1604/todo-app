@@ -1,155 +1,155 @@
-import { Component } from 'react'
+import React, { useState } from 'react';
 
-import NewTaskForm from '../NewTaskForm/NewTaskForm'
-import './App.css'
-import Footer from '../Footer/Footer'
-import TaskList from '../TaskList/TaskList'
+import NewTaskForm from '../NewTaskForm/NewTaskForm';
+import TaskList from '../TaskList/TaskList';
+import Footer from '../Footer/Footer';
 
-export default class App extends Component {
-  state = {
-    tasks: [
-      {
-        id: 1,
-        taskName: 'Drink Coffee',
-        creationTime: Date.now(),
-        done: false,
+const App = () => {
+  const [todoData, setTodoData] = useState([
+    {
+      id: 1,
+      text: 'Drink coffee',
+      timer: Date.now(),
+      completed: false,
+      editing: false,
+      time: 10000,
+      isRunning: true,
+    },
+    {
+      id: 2,
+      text: 'Finish code',
+      timer: Date.now(),
+      completed: false,
+      editing: false,
+      time: 10000,
+      isRunning: true,
+    },
+    {
+      id: 3,
+      text: 'Check mail',
+      timer: Date.now(),
+      completed: false,
+      editing: false,
+      time: 10000,
+      isRunning: true,
+    },
+  ]);
+  const [filterName, setFilterName] = useState('all');
+
+  const timerTick = (id) => {
+    setTodoData((prevState) =>
+      prevState.map((task) =>
+        task.id === id && task.time > 0 && task.isRunning ? { ...task, time: task.time - 1000 } : task
+      )
+    );
+  };
+
+  const onStopTimer = (id) => {
+    setTodoData((prevState) => prevState.map((task) => (task.id === id ? { ...task, isRunning: false } : task)));
+  };
+
+  const onStartTimer = (id) => {
+    setTodoData((prevState) => prevState.map((task) => (task.id === id ? { ...task, isRunning: true } : task)));
+  };
+
+  const deleteTask = (id) => {
+    setTodoData((prevState) => prevState.filter((task) => task.id !== id));
+  };
+
+  const addNewTask = (taskText, time) => {
+    setTodoData((prevState) => {
+      const copyStateArr = structuredClone(prevState);
+      const randomId = Math.random().toString(36).slice(2);
+
+      copyStateArr.push({
+        id: randomId,
+        text: taskText,
+        timer: Date.now(),
+        completed: false,
         editing: false,
-      },
-      {
-        id: 2,
-        taskName: 'Drink Energetic',
-        creationTime: Date.now(),
-        done: false,
-        editing: false,
-      },
-      {
-        id: 3,
-        taskName: 'Drink Alhocol',
-        creationTime: Date.now(),
-        done: false,
-        editing: false,
-      },
-    ],
-    status: 'all',
-  }
+        time: time,
+        isRunning: true,
+      });
 
-  deleteitem = (id) => {
-    this.setState(({ tasks }) => {
-      const idx = tasks.findIndex((el) => el.id === id)
-      const newArr = tasks.toSpliced(idx, 1)
-      return {
-        tasks: newArr,
-      }
-    })
-  }
+      return copyStateArr;
+    });
+  };
 
-  deleteCompleted = () => {
-    this.setState(({ tasks }) => {
-      const newArr = tasks.filter((el) => !el.done)
-      return {
-        tasks: newArr,
-      }
-    })
-  }
+  const editTask = (id, newText) => {
+    setTodoData((prevState) => {
+      const index = prevState.findIndex((el) => el.id === id);
+      const copyStateArr = structuredClone(prevState);
 
-  editTask = (id, newText) => {
-    this.setState(({ tasks }) => {
-      const updatedTasks = tasks.map((task) => {
-        if (task.id === id) {
-          return { ...task, taskName: newText }
-        }
-        return task
-      })
+      copyStateArr[index].text = newText;
+      copyStateArr[index].editing = false;
 
-      return {
-        tasks: updatedTasks,
-      }
-    })
-  }
+      return copyStateArr;
+    });
+  };
 
-  createTask = (taskName) => {
-    return {
-      id: Math.random().toString(36).slice(2),
-      taskName,
-      creationTime: Date.now(),
-      done: false,
+  const changeDoneStatus = (id) => {
+    setTodoData((prevState) => {
+      const copyStateArr = structuredClone(prevState);
+      const index = copyStateArr.findIndex((el) => el.id === id);
+
+      copyStateArr[index].completed = !copyStateArr[index].completed;
+
+      return copyStateArr;
+    });
+  };
+
+  const changeEditingStatus = (id) => {
+    setTodoData((prevState) => {
+      const copyStateArr = structuredClone(prevState);
+      const index = copyStateArr.findIndex((el) => el.id === id);
+      copyStateArr[index].editing = true;
+
+      return copyStateArr;
+    });
+  };
+
+  const clearCompletedTask = () => {
+    setTodoData((prevState) => prevState.filter((task) => task.completed === false));
+  };
+
+  function filterTasks(filterName) {
+    switch (filterName) {
+      case 'all':
+        return todoData;
+      case 'active':
+        return todoData.filter((task) => task.completed === false);
+      case 'completed':
+        return todoData.filter((task) => task.completed === true);
+      default:
+        return;
     }
   }
 
-  addTask = (text) => {
-    const newTask = this.createTask(text)
-    this.setState(({ tasks }) => {
-      const arrayAdded = [...tasks, newTask]
-      return {
-        tasks: arrayAdded,
-      }
-    })
-  }
-
-  taskCompleted = (id) => {
-    this.setState(({ tasks }) => {
-      const idx = tasks.findIndex((el) => el.id === id)
-      const oldTask = tasks[idx]
-      const newTask = { ...oldTask, done: !oldTask.done }
-      const newArr = tasks.toSpliced(idx, 1, newTask)
-      return { tasks: newArr }
-    })
-  }
-
-  taskFilters = (status) => {
-    if (status === 'all') {
-      return this.state.tasks
-    }
-    if (status === 'active') {
-      return this.state.tasks.filter((el) => !el.done)
-    }
-    if (status === 'completed') {
-      return this.state.tasks.filter((el) => el.done)
-    }
-  }
-  filteredArr = (status) => {
-    this.setState(() => {
-      return { status }
-    })
-  }
-
-  changeEditingStatus = (id) => {
-    this.setState(({ tasks }) => {
-      const copyStateArr = structuredClone(tasks)
-      const index = copyStateArr.findIndex((el) => el.id === id)
-
-      copyStateArr[index].editing = !copyStateArr[index].editing
-
-      return {
-        tasks: copyStateArr,
-      }
-    })
-  }
-
-  render() {
-    const leftCount = this.state.tasks.filter((el) => !el.done).length
-
-    return (
-      <section className="todoapp">
-        <header className="header">
-          <h1>todos</h1>
-          <NewTaskForm addTask={(text) => this.addTask(text)} />
-        </header>
-        <section className="main">
-          <TaskList
-            todos={this.taskFilters(this.state.status)}
-            onDeleted={(id) => this.deleteitem(id)}
-            onCompleted={(id) => this.taskCompleted(id)}
-            editTask={(id, newText) => this.editTask(id, newText)}
-            changeEditingStatus={(id) => this.changeEditingStatus(id)}
-          />
-          <Footer
-            leftCount={leftCount}
-            filteredArr={(status) => this.filteredArr(status)}
-            deleteCompleted={this.deleteCompleted}
-          />
-        </section>
+  return (
+    <section className="todoapp">
+      <header className="header">
+        <h1>todos</h1>
+        <NewTaskForm onSubmit={(taskText, time) => addNewTask(taskText, time)} />
+      </header>
+      <section className="main">
+        <TaskList
+          timerTick={timerTick}
+          onStopTimer={onStopTimer}
+          onStartTimer={onStartTimer}
+          tasks={filterTasks(filterName)}
+          deleteTask={(id) => deleteTask(id)}
+          changeDoneStatus={(id) => changeDoneStatus(id)}
+          changeEditingStatus={(id) => changeEditingStatus(id)}
+          editTask={(id, newText) => editTask(id, newText)}
+        />
+        <Footer
+          tasks={todoData}
+          clearCompletedTask={clearCompletedTask}
+          changeFilter={(activeFilterName) => setFilterName(activeFilterName)}
+        />
       </section>
-    )
-  }
-}
+    </section>
+  );
+};
+
+export default App;

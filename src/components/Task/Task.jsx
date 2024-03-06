@@ -1,71 +1,69 @@
-import React, { Component } from 'react'
-import './Task.css'
-import { formatDistanceToNow } from 'date-fns'
-import PropTypes from 'prop-types'
+import React, { useState, useEffect } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 
-export default class Task extends Component {
-  static defaultProps = {
-    taskName: '',
-    creationTime: Date.now(),
-    done: false,
-    onDeleted: () => {},
-    onCompleted: () => {},
-    editing: false,
-    editTask: () => {},
-    changeEditingStatus: () => {},
-  }
+import './Task.css';
 
-  static propTypes = {
-    taskName: PropTypes.string,
-    creationTime: PropTypes.number,
-    done: PropTypes.bool,
-    onCompleted: PropTypes.func,
-    onDeleted: PropTypes.func,
-    editing: PropTypes.bool,
-    editTask: PropTypes.func,
-    changeEditingStatus: PropTypes.func,
-  }
+const Task = ({
+  text,
+  timer,
+  completed,
+  editing,
+  deleteTask,
+  changeDoneStatus,
+  changeEditingStatus,
+  editTask,
+  time,
+  onStartTimer,
+  onStopTimer,
+  timerTick,
+}) => {
+  const [editingTaskText, setEditingTaskText] = useState(text);
 
-  state = {
-    editingTaskText: this.props.taskName,
-  }
+  useEffect(() => {
+    let timerID = setInterval(() => timerTick(), 1000);
 
-  editTaskText = (e) => {
-    this.setState({
-      editingTaskText: e.target.value,
-    })
-  }
+    return () => clearInterval(timerID);
+  }, []);
 
-  render() {
-    const { taskName, creationTime, done, editing, onDeleted, onCompleted, changeEditingStatus, editTask } = this.props
-    const { editingTaskText } = this.state
-    const isEditingClass = editing ? 'editing' : ''
-    const isDoneClass = done ? 'completed' : ''
-    return (
-      <li className={`${isEditingClass} ${isDoneClass}`}>
-        <div className="view">
-          <input className="toggle" type="checkbox" checked={done} onChange={onCompleted} />
-          <label>
-            <span className="description">{taskName}</span>
-            <span className="created">
-              {formatDistanceToNow(new Date(creationTime), {
-                includeSeconds: true,
-              })}
+  const taskTimer = formatDistanceToNow(new Date(timer), { includeSeconds: true });
+  const isCompletedClass = completed === true ? 'completed' : '';
+  const isEditingClass = editing === true ? ' editing' : '';
+  const minutes = Math.floor(time / 1000 / 60);
+  const seconds = (time / 1000) % 60;
+
+  return (
+    <li className={isCompletedClass + isEditingClass}>
+      <div className="view">
+        <input className="toggle" type="checkbox" onChange={changeDoneStatus} checked={completed} />
+        <label>
+          <span className="description title">{text}</span>
+          <span className="description control-timer">
+            <button className="icon icon-play hover-icon" onClick={onStartTimer}></button>
+            <button className="icon icon-pause hover-icon" onClick={onStopTimer}></button>
+            <span>
+              {minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}
             </span>
-          </label>
-          <button className="icon icon-edit" onClick={changeEditingStatus}></button>
-          <button className="icon icon-destroy" onClick={onDeleted}></button>
-        </div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            changeEditingStatus()
-            editTask(editingTaskText)
-          }}
-        >
-          <input type="text" className="edit" value={editingTaskText} onChange={this.editTaskText} />
-        </form>
-      </li>
-    )
-  }
-}
+          </span>
+          <span className="description">{taskTimer}</span>
+        </label>
+        <button className="icon icon-edit hover-icon" onClick={changeEditingStatus}></button>
+        <button className="icon icon-destroy hover-icon" onClick={deleteTask}></button>
+      </div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          editTask(editingTaskText);
+        }}
+      >
+        <input
+          type="text"
+          className="edit"
+          value={editingTaskText}
+          onChange={(e) => setEditingTaskText(e.target.value)}
+        />
+      </form>
+    </li>
+  );
+};
+
+export default Task;

@@ -1,45 +1,37 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
 
-import Task from '../Task/Task'
+import Task from '../Task/Task';
+import './TaskList.css';
 
-import './TaskList.css'
+const TaskList = ({
+  tasks,
+  deleteTask,
+  changeDoneStatus,
+  changeEditingStatus,
+  editTask,
+  onStartTimer,
+  onStopTimer,
+  timerTick,
+}) => {
+  const todo = tasks.map((task) => {
+    const { id, ...itemProps } = task;
 
-export default class TaskList extends Component {
-  static defaultProps = {
-    todos: [],
-    onDeleted: () => {},
-    onCompleted: () => {},
-    editTask: () => {},
-    changeEditingStatus: () => {},
-  }
-
-  static propTypes = {
-    todos: PropTypes.arrayOf(PropTypes.object),
-    onCompleted: PropTypes.func,
-    onDeleted: PropTypes.func,
-    editTask: PropTypes.func,
-    changeEditingStatus: PropTypes.func,
-  }
-
-  render() {
-    const { todos, onDeleted, onCompleted, editTask, changeEditingStatus } = this.props
     return (
-      <ul className="todo-list">
-        {todos.map((item) => {
-          const { id, ...todo } = item
-          return (
-            <Task
-              key={id}
-              {...todo}
-              onDeleted={() => onDeleted(id)}
-              onCompleted={() => onCompleted(id)}
-              editTask={(newText) => editTask(id, newText)}
-              changeEditingStatus={() => changeEditingStatus(id)}
-            />
-          )
-        })}
-      </ul>
-    )
-  }
-}
+      <Task
+        key={id}
+        {...itemProps}
+        deleteTask={() => deleteTask(id)}
+        changeDoneStatus={() => changeDoneStatus(id)}
+        changeEditingStatus={() => changeEditingStatus(id)}
+        editTask={(taskText) => editTask(id, taskText)}
+        onStopTimer={() => onStopTimer(id)}
+        onStartTimer={() => onStartTimer(id)}
+        timerTick={() => timerTick(id)}
+      />
+    );
+  });
+
+  return <ul className="todo-list">{todo}</ul>;
+};
+
+export default TaskList;

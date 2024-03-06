@@ -1,36 +1,55 @@
-import './NewTaskForm.css'
-import { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react';
 
-export default class NewTaskForm extends Component {
-  state = {
-    taskName: '',
-  }
+import './NewTaskForm.css';
 
-  static defaultProps = {
-    addTask: () => {},
-  }
+const NewTaskForm = ({ onSubmit }) => {
+  const [taskInputValue, setTaskInputValue] = useState('');
+  const [minutesInputValue, setMinutesInputValue] = useState('');
+  const [secondsInputValue, setSecondsInputValue] = useState('');
 
-  static propTypes = {
-    addTask: PropTypes.func,
-  }
+  const clearInputs = () => {
+    setTaskInputValue('');
+    setMinutesInputValue('');
+    setSecondsInputValue('');
+  };
 
-  onTextChange = (e) => {
-    this.setState({
-      taskName: e.target.value,
-    })
-  }
+  const handleSubmit = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
 
-  onSubmit = (e) => {
-    e.preventDefault()
-    this.props.addTask(this.state.taskName)
-  }
+      if (taskInputValue.trim()) {
+        onSubmit(taskInputValue, +minutesInputValue * 60000 + +secondsInputValue * 1000);
+      }
+      clearInputs();
+    }
+  };
 
-  render() {
-    return (
-      <form onSubmit={this.onSubmit}>
-        <input className="new-todo" placeholder="How to become a senior?" autoFocus onChange={this.onTextChange} />
-      </form>
-    )
-  }
-}
+  return (
+    <form className="new-todo-form">
+      <input
+        className="new-todo"
+        placeholder="What needs to be done?"
+        value={taskInputValue}
+        autoFocus
+        onChange={(e) => setTaskInputValue(e.target.value)}
+        onKeyDown={handleSubmit}
+      />
+      <input
+        className="new-todo-form__timer"
+        placeholder="Min"
+        value={minutesInputValue}
+        onChange={(e) => setMinutesInputValue(e.target.value)}
+        onKeyDown={handleSubmit}
+      />
+      <input
+        className="new-todo-form__timer"
+        placeholder="Sec"
+        value={secondsInputValue}
+        onChange={(e) => setSecondsInputValue(e.target.value)}
+        onKeyDown={handleSubmit}
+      />
+    </form>
+  );
+};
+
+export default NewTaskForm;

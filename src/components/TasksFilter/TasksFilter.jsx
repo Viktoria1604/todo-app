@@ -1,19 +1,47 @@
-import React from 'react'
-import './TasksFilter.css'
-const TasksFilter = ({ filteredArr }) => {
+import React, { useState } from 'react';
+
+import './TasksFilter.css';
+
+const TasksFilter = ({ changeFilter }) => {
+  const [activeBtn, setActiveBtn] = useState('all');
+
   return (
     <ul className="filters">
       <li>
-        <button onClick={() => filteredArr('all')}>All</button>
+        <button
+          className={activeBtn === 'all' ? 'selected' : null}
+          onClick={() => {
+            changeFilter('all');
+            setActiveBtn('all');
+          }}
+        >
+          All
+        </button>
       </li>
       <li>
-        <button onClick={() => filteredArr('active')}>Active</button>
+        <button
+          className={activeBtn === 'active' ? 'selected' : null}
+          onClick={() => {
+            changeFilter('active');
+            setActiveBtn('active');
+          }}
+        >
+          Active
+        </button>
       </li>
       <li>
-        <button onClick={() => filteredArr('completed')}>Completed</button>
+        <button
+          className={activeBtn === 'completed' ? 'selected' : null}
+          onClick={() => {
+            changeFilter('completed');
+            setActiveBtn('completed');
+          }}
+        >
+          Completed
+        </button>
       </li>
     </ul>
-  )
-}
+  );
+};
 
-export default TasksFilter
+export default TasksFilter;
